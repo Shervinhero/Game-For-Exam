@@ -5,7 +5,7 @@ describe('API Endpoints', () => {
     let token;
 
     beforeAll(async () => {
-        // Obtain token using POST /authenticate
+
         const response = await request(app)
             .post('/authenticate')
             .send({ username: 'testuser', password: 'password' });

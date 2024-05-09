@@ -7,17 +7,17 @@ import { v4 as uuidv4 } from 'uuid';
 const app = express();
 app.use(bodyParser.json());
 
-// Set up JWT secret key
+
 const SECRET_KEY = '12345';
 
-// Function to authenticate user
+
 async function authenticateUser(username, password) {
     const users = await read('data/users.json');
     const user = users.find(u => u.username === username && u.password === password);
     return user || null;
 }
 
-// Middleware to verify JWT token
+
 function verifyToken(req, res, next) {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
@@ -33,7 +33,7 @@ function verifyToken(req, res, next) {
     }
 }
 
-// POST /authenticate - authenticate and provide JWT token
+
 app.post('/authenticate', async (req, res) => {
     const { username, password } = req.body;
     const user = await authenticateUser(username, password);
@@ -46,14 +46,14 @@ app.post('/authenticate', async (req, res) => {
     res.status(401).json({ message: 'Invalid username or password' });
 });
 
-// GET /questions - retrieve all questions
+
 app.get('/questions', async (req, res) => {
     const questions = await read('data/questions.json');
     const questionsList = questions.map(({ id, question, options }) => ({ id, question, options }));
     res.json(questionsList);
 });
 
-// GET /questions/:questionId - retrieve a specific question by UUID
+
 app.get('/questions/:questionId', async (req, res) => {
     const { questionId } = req.params;
     const questions = await read('data/questions.json');
@@ -67,7 +67,7 @@ app.get('/questions/:questionId', async (req, res) => {
     res.json({ id, question: text, options });
 });
 
-// POST /game-runs - create a new game run
+
 app.post('/game-runs', verifyToken, async (req, res) => {
     const userName = req.user.username;
     const newRun = {
@@ -84,7 +84,7 @@ app.post('/game-runs', verifyToken, async (req, res) => {
     res.json({ runId: newRun.id });
 });
 
-// PUT /game-runs/:runId/responses - submit a response to a specific question
+
 app.put('/game-runs/:runId/responses', verifyToken, async (req, res) => {
     const { runId } = req.params;
     const { questionId, answerIndex } = req.body;
@@ -104,7 +104,7 @@ app.put('/game-runs/:runId/responses', verifyToken, async (req, res) => {
     res.status(200).json({ message: 'Response submitted' });
 });
 
-// GET /game-runs/:runId/results - retrieve the results of a specific game run
+
 app.get('/game-runs/:runId/results', verifyToken, async (req, res) => {
     const { runId } = req.params;
     const userName = req.user.username;
